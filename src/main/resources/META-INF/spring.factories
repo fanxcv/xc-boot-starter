@@ -1,0 +1,13 @@
+# Auto Configure
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.fan.xc.boot.starter.XcBootCoreAutoConfiguration,\
+  com.fan.xc.boot.plugins.api.gateway.DefaultGatewayHandler
+# Environment Post Processors
+org.springframework.boot.env.EnvironmentPostProcessor=\
+  com.fan.xc.boot.starter.configuration.XcEnvironmentPostProcessor
+#org.springframework.boot.cloud.CloudFoundryVcapEnvironmentPostProcessor,
+#org.springframework.boot.env.SpringApplicationJsonEnvironmentPostProcessor,
+#org.springframework.boot.env.SystemEnvironmentPropertySourceEnvironmentPostProcessor
+# 注册用于打印日志
+org.springframework.context.ApplicationListener=\
+  com.fan.xc.boot.starter.configuration.XcEnvironmentPostProcessor
