@@ -12,9 +12,6 @@ import org.springframework.core.type.AnnotationMetadata
 open class WeiXinRegistrar : ImportBeanDefinitionRegistrar {
 
     override fun registerBeanDefinitions(metadata: AnnotationMetadata, registry: BeanDefinitionRegistry) {
-        val attributes = metadata.getAnnotationAttributes(EnableWeiXinApi::class.java.name)
-        WeiXinConfig.syncFromApi = attributes?.get("fromApi") as Boolean
-
         val accessTokenManagerClazz = AccessTokenManager::class.java
         val jsApiTicketManagerClazz = JsApiTicketManager::class.java
         registry.registerBeanDefinition(accessTokenManagerClazz.name, RootBeanDefinition(accessTokenManagerClazz))

@@ -1,0 +1,16 @@
+syntax = "proto3";
+import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
+
+option java_multiple_files = true;
+option java_package = "com.fan.xc.boot.plugins.weixin.grpc";
+option java_outer_classname = "WeiXinProto";
+
+service WeiXinService {
+    // 获取accessToken
+    rpc getAccessToken(google.protobuf.Empty) returns (google.protobuf.StringValue) {
+    }
+    // 获取accessToken
+    rpc getJsTicket(google.protobuf.Empty) returns (google.protobuf.StringValue) {
+    }
+}

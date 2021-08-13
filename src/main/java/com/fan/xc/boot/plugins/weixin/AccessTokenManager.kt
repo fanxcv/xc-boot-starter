@@ -1,11 +1,13 @@
 package com.fan.xc.boot.plugins.weixin
 
+import com.fan.xc.boot.plugins.weixin.grpc.WeiXinRpcClient
 import com.fan.xc.boot.starter.exception.XcRunException
 import com.fan.xc.boot.starter.utils.NetUtils
 import org.springframework.context.annotation.Lazy
 
 @Lazy
-class AccessTokenManager(private val config: WeiXinConfig) : AbstractTokenManager() {
+class AccessTokenManager(private val config: WeiXinConfig,
+                         private val weiXinRpcClient: WeiXinRpcClient) : AbstractTokenManager() {
     val accessToken = TokenEntity()
 
     override fun token(): String {
@@ -24,10 +26,9 @@ class AccessTokenManager(private val config: WeiXinConfig) : AbstractTokenManage
     }
 
     override fun refreshToken() {
-        val url = if (config.isSyncFromApi) "${config.syncPath}/accessToken/${config.authorization}"
-        else "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${config.appId}&secret=${config.appSecret}"
         log.info("===> refresh WeiXin accessToken")
-        val json = NetUtils.get(url)
+        val json = if (config.client?.isEnable == true) weiXinRpcClient.getAccessToken()
+        else NetUtils.get("https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${config.appId}&secret=${config.appSecret}")
         //判断是否正确获取到accessToken了
         if (json.contains("\"access_token\"")) {
             updateToken(accessToken, json, "access_token")

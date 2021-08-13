@@ -51,17 +51,33 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>30.1-jre</version>
+            <version>30.1.1-jre</version>
         </dependency>
         <dependency>
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-all</artifactId>
-            <version>5.5.8</version>
+            <version>5.7.7</version>
         </dependency>
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
-            <version>1.2.75</version>
+            <version>1.2.78</version>
+        </dependency>
+        <!--GRPC-->
+        <dependency>
+            <groupId>io.grpc</groupId>
+            <artifactId>grpc-netty-shaded</artifactId>
+            <version>1.39.0</version>
+        </dependency>
+        <dependency>
+            <groupId>io.grpc</groupId>
+            <artifactId>grpc-protobuf</artifactId>
+            <version>1.39.0</version>
+        </dependency>
+        <dependency>
+            <groupId>io.grpc</groupId>
+            <artifactId>grpc-stub</artifactId>
+            <version>1.39.0</version>
         </dependency>
 
         <dependency>
@@ -123,6 +139,13 @@
     </dependencyManagement>
 
     <build>
+        <extensions>
+            <extension>
+                <groupId>kr.motd.maven</groupId>
+                <artifactId>os-maven-plugin</artifactId>
+                <version>1.6.2</version>
+            </extension>
+        </extensions>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -195,6 +218,25 @@
                     </execution>
                 </executions>
             </plugin>
+            <!--protobuf编译插件-->
+            <!--<plugin>-->
+            <!--    <groupId>org.xolstice.maven.plugins</groupId>-->
+            <!--    <artifactId>protobuf-maven-plugin</artifactId>-->
+            <!--    <version>0.6.1</version>-->
+            <!--    <configuration>-->
+            <!--        <protocArtifact>com.google.protobuf:protoc:3.17.2:exe:${os.detected.classifier}</protocArtifact>-->
+            <!--        <pluginId>grpc-java</pluginId>-->
+            <!--        <pluginArtifact>io.grpc:protoc-gen-grpc-java:1.39.0:exe:${os.detected.classifier}</pluginArtifact>-->
+            <!--    </configuration>-->
+            <!--    <executions>-->
+            <!--        <execution>-->
+            <!--            <goals>-->
+            <!--                <goal>compile</goal>-->
+            <!--                <goal>compile-custom</goal>-->
+            <!--            </goals>-->
+            <!--        </execution>-->
+            <!--    </executions>-->
+            <!--</plugin>-->
             <!--package时添加tag-->
             <!--<plugin>-->
             <!--    <groupId>com.jd.jt2</groupId>-->

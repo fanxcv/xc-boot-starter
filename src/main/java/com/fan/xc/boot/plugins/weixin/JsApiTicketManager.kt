@@ -1,11 +1,13 @@
 package com.fan.xc.boot.plugins.weixin
 
+import com.fan.xc.boot.plugins.weixin.grpc.WeiXinRpcClient
 import com.fan.xc.boot.starter.exception.XcRunException
 import com.fan.xc.boot.starter.utils.NetUtils
 import org.springframework.context.annotation.Lazy
 
 @Lazy
 class JsApiTicketManager(private val config: WeiXinConfig,
+                         private val weiXinRpcClient: WeiXinRpcClient,
                          private val accessTokenManager: TokenManager) : AbstractTokenManager() {
     val jsApiTicket = TokenEntity()
 
@@ -25,10 +27,9 @@ class JsApiTicketManager(private val config: WeiXinConfig,
     }
 
     override fun refreshToken() {
-        val url = if (config.isSyncFromApi) "${config.syncPath}/jsTicket/${config.authorization}"
-        else "https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=${accessTokenManager.token()}&type=jsapi"
         log.info("===> refresh WeiXin jsApiTicket")
-        val json = NetUtils.get(url)
+        val json = if (config.client?.isEnable == true) weiXinRpcClient.getAccessToken()
+        else NetUtils.get("https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=${accessTokenManager.token()}&type=jsapi")
         //判断是否正确获取到ticket了
         if (json.contains("\"ticket\"")) {
             updateToken(jsApiTicket, json, "ticket")

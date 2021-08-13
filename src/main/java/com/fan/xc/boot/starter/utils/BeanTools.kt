@@ -4,6 +4,7 @@ import com.google.common.base.CaseFormat
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.lang.reflect.Field
+import java.lang.reflect.Modifier
 import java.util.*
 import java.util.function.Function
 
@@ -50,10 +51,22 @@ object BeanTools {
                 return t
             }
             for (field in fields) {
+                val modifiers = field.modifiers
+                // 跳过static或final修饰的属性
+                if (Modifier.isFinal(modifiers) || Modifier.isStatic(modifiers)) {
+                    continue
+                }
+
                 // 获取字段名
                 val name = field.name
                 // 获取值,先尝试从映射表中获取,获取不到的话尝试从原始数据类获取
-                var res = mapValues?.get(name)?.apply(source) ?: tryGetSourceValue(source, oFields, name)
+                val function = mapValues?.get(name)
+                var res = if (function != null) function.apply(source) else tryGetSourceValue(source, oFields, name)
+
+                if (Objects.isNull(res)) {
+                    continue
+                }
+
                 // 尝试转换下参数对象
                 res = Conversion.binder.convertIfNecessary(res, field.type)
                 // 设置值

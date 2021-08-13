@@ -21,10 +21,6 @@ public class WeiXinConfig {
      */
     private String token;
     /**
-     * 同步Token的URL地址
-     */
-    private String syncPath;
-    /**
      * 微信APP ID
      */
     private String appId = Dict.BLANK;
@@ -33,20 +29,72 @@ public class WeiXinConfig {
      */
     private String appSecret = Dict.BLANK;
     /**
-     * 接口调用凭证
+     * 服务端配置
      */
-    private String authorization = "authorization";
+    private Server server;
     /**
-     * 是否从远端同步Token
+     * 客户端配置
      */
-    static boolean syncFromApi = false;
+    private Client client;
+
+    @Data
+    public static class Server {
+        /**
+         * 是否启用服务端
+         */
+        private boolean enable = false;
+        /**
+         * 监听端口
+         */
+        private int port = 20002;
+
+        public boolean isEnable() {
+            return enable;
+        }
+
+        public int getPort() {
+            return port;
+        }
+    }
+
+    @Data
+    public static class Client {
+        /**
+         * 是否启用客户端
+         */
+        private boolean enable = false;
+        /**
+         * Server端IP
+         */
+        private String host;
+        /**
+         * Server端端口
+         */
+        private int port = 20002;
+
+        public boolean isEnable() {
+            return enable;
+        }
+
+        public String getHost() {
+            return host;
+        }
+
+        public int getPort() {
+            return port;
+        }
+    }
+
+    public Server getServer() {
+        return server;
+    }
+
+    public Client getClient() {
+        return client;
+    }
 
     public String getToken() {
         return token;
-    }
-
-    public String getSyncPath() {
-        return syncPath;
     }
 
     public String getAppId() {
@@ -55,13 +103,5 @@ public class WeiXinConfig {
 
     public String getAppSecret() {
         return appSecret;
-    }
-
-    public String getAuthorization() {
-        return authorization;
-    }
-
-    public boolean isSyncFromApi() {
-        return syncFromApi;
     }
 }
