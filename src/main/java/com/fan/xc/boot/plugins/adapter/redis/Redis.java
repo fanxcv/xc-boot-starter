@@ -3,6 +3,7 @@ package com.fan.xc.boot.plugins.adapter.redis;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 /**
  * redis接口
@@ -66,6 +67,16 @@ public interface Redis {
     boolean setEx(String key, Object value, int seconds);
 
     /**
+     * 普通缓存放入并设置时间
+     * @param key      键
+     * @param value    值
+     * @param time     时间值 time要大于0 如果time小于等于0 将设置无限期
+     * @param timeUnit 时间单位
+     * @return SET 在设置操作成功完成时，才返回 OK
+     */
+    boolean setEx(String key, Object value, int time, TimeUnit timeUnit);
+
+    /**
      * 如果Key存在,则不设置,不存在的话设置key,并添加过期时间
      * @param key         key
      * @param value       value
@@ -73,6 +84,16 @@ public interface Redis {
      * @return 是否设置成功
      */
     boolean setExNx(String key, Object value, long millisecond);
+
+    /**
+     * 如果Key存在,则不设置,不存在的话设置key,并添加过期时间
+     * @param key      key
+     * @param value    value
+     * @param time     过期时间,毫秒
+     * @param timeUnit 时间单位
+     * @return 是否设置成功
+     */
+    boolean setExNx(String key, Object value, long time, TimeUnit timeUnit);
 
     /**
      * 递减

@@ -68,8 +68,20 @@ public class SpringRedisImpl implements Redis {
     }
 
     @Override
+    public boolean setEx(String key, Object value, int time, TimeUnit timeUnit) {
+        template.opsForValue().set(key, value, time, timeUnit);
+        return true;
+    }
+
+    @Override
     public boolean setExNx(String key, Object value, long millisecond) {
         final Boolean res = template.opsForValue().setIfAbsent(key, value, millisecond, TimeUnit.MILLISECONDS);
+        return res == null ? false : res;
+    }
+
+    @Override
+    public boolean setExNx(String key, Object value, long time, TimeUnit timeUnit) {
+        final Boolean res = template.opsForValue().setIfAbsent(key, value, time, timeUnit);
         return res == null ? false : res;
     }
 
