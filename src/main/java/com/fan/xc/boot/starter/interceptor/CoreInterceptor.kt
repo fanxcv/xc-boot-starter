@@ -4,11 +4,11 @@ import com.alibaba.fastjson.JSON
 import com.alibaba.fastjson.parser.Feature
 import com.fan.xc.boot.plugins.api.gateway.XcGatewayHandler
 import com.fan.xc.boot.starter.Dict
-import com.fan.xc.boot.starter.interfaces.XcEventInterface
 import com.fan.xc.boot.starter.enums.ReturnCode
 import com.fan.xc.boot.starter.event.EventImpl
 import com.fan.xc.boot.starter.event.EventInner
 import com.fan.xc.boot.starter.exception.XcRunException
+import com.fan.xc.boot.starter.interfaces.XcEventInterface
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.NoSuchBeanDefinitionException
@@ -59,13 +59,14 @@ class CoreInterceptor(applicationContext: ApplicationContext) : HandlerIntercept
 
             // 解析Token
             event.setToken(eventInterface?.parseToken(request))
+            // 解析参数
+            getRequestParam(request, event)
 
             // 网关拦截器
             gatewayHandler?.forEach { if (!it.check(handler, request, event)) throw XcRunException(ReturnCode.CHECK_FAIL) }
 
             // 标记该请求有使用XcCore处理
             request.setAttribute(Dict.REQUEST_DEAL_BY_XC_CORE, true)
-            getRequestParam(request, event)
         }
         return true
     }

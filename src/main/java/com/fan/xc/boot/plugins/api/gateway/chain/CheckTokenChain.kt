@@ -7,7 +7,6 @@ import com.fan.xc.boot.starter.configuration.XcConfiguration
 import com.fan.xc.boot.starter.event.Event
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
 import org.springframework.lang.NonNull
-import org.springframework.web.method.HandlerMethod
 import java.util.*
 import javax.servlet.http.Cookie
 import javax.servlet.http.HttpServletRequest
@@ -21,20 +20,20 @@ open class CheckTokenChain(private val config: XcConfiguration, private val redi
         config.gateway?.authTokenKey ?: "IFIS_AUTH"
     }
 
-    override fun doExec(handler: HandlerMethod, request: HttpServletRequest, event: Event, v: ApiCheckData?): Pair<Boolean?, ApiCheckData?> {
-        val useToken = v?.check?.useToken ?: return Pair(null, v)
+    override fun doExec(event: Event, v: ApiCheckData): Boolean? {
+        val useToken = v.check?.useToken ?: return null
         return if (useToken) {
             //其次校验Token,如果Token校验通过,直接允许
-            val redisToken = getToken(request)
+            val redisToken = getToken(v.request)
             return if (redisToken != null) {
                 //通过判断redis中是否包含该token来判断Token是否过期
-                Pair(redis.exists(redisToken), v)
+                redis.exists(redisToken)
             } else {
                 //如果没有获取到token,继续下一步校验
-                Pair(null, v)
+                null
             }
         } else {
-            Pair(null, v)
+            null
         }
     }
 

@@ -134,16 +134,6 @@ public class XcConfiguration {
         private boolean useDefaultGateway = false;
 
         /**
-         * 全局限流频率,次/s
-         */
-        private long rateLimit;
-
-        /**
-         * 限流接口等待超时时间,单位秒
-         */
-        private long rateTimeout = 3;
-
-        /**
          * checkToken关联的Cookie Key
          */
         private String authTokenKey = "IFIS_AUTH";
@@ -157,16 +147,8 @@ public class XcConfiguration {
             return useDefaultGateway;
         }
 
-        public long getRateLimit() {
-            return rateLimit;
-        }
-
         public String getAuthTokenKey() {
             return authTokenKey;
-        }
-
-        public long getRateTimeout() {
-            return rateTimeout;
         }
 
         public IpCheckConfig getIp() {

@@ -239,12 +239,21 @@
             <!--</plugin>-->
             <!--package时添加tag-->
             <!--<plugin>-->
-            <!--    <groupId>com.jd.jt2</groupId>-->
+            <!--    <groupId>com.fan.xc</groupId>-->
             <!--    <artifactId>git-tag-maven-plugin</artifactId>-->
             <!--    <version>1.0.1-SNAPSHOT</version>-->
             <!--    <configuration>-->
             <!--        <tag>${build.time}</tag>-->
+            <!--        <skipCheckFiles>true</skipCheckFiles>-->
             <!--    </configuration>-->
+            <!--    <executions>-->
+            <!--        <execution>-->
+            <!--            <phase>package</phase>-->
+            <!--            <goals>-->
+            <!--                <goal>tag</goal>-->
+            <!--            </goals>-->
+            <!--        </execution>-->
+            <!--    </executions>-->
             <!--</plugin>-->
             <!--<plugin>-->
             <!--    <artifactId>maven-assembly-plugin</artifactId>-->

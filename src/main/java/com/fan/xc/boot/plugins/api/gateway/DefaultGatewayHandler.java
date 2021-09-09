@@ -28,10 +28,10 @@ import javax.servlet.http.HttpServletRequest;
  */
 @Slf4j
 @Import({
+        RollWindowRateLimitChain.class,
         IpBlackListCheckChain.class,
         IpWhiteListCheckChain.class,
         CheckTokenChain.class,
-        RateLimitChain.class,
         TimeLimitChain.class,
         UnCheckChain.class
 })
@@ -46,8 +46,18 @@ public class DefaultGatewayHandler implements XcGatewayHandler, BeanFactoryAware
     @Data
     @AllArgsConstructor
     public static class ApiCheckData {
+        private HttpServletRequest request;
+        private HandlerMethod handler;
         private ApiCheck check;
         private String ip;
+
+        public HttpServletRequest getRequest() {
+            return request;
+        }
+
+        public HandlerMethod getHandler() {
+            return handler;
+        }
 
         public ApiCheck getCheck() {
             return check;
@@ -65,9 +75,9 @@ public class DefaultGatewayHandler implements XcGatewayHandler, BeanFactoryAware
     @Override
     public boolean check(HandlerMethod handler, HttpServletRequest request, Event event) {
         final ApiCheck check = handler.getMethodAnnotation(ApiCheck.class);
-        final ApiCheckData data = new ApiCheckData(check, null);
+        final ApiCheckData data = new ApiCheckData(request, handler, check, null);
 
-        final Boolean res = gatewayChain.exec(handler, request, event, data);
+        final Boolean res = gatewayChain.exec(event, data);
         return res == null ? true : res;
     }
 
@@ -79,13 +89,13 @@ public class DefaultGatewayHandler implements XcGatewayHandler, BeanFactoryAware
     @Override
     public void afterPropertiesSet() {
         Assert.notNull(beanFactory, "beanFactory is must not be null");
-        log.info("===> init default xc gateway chain");
-        AbstractGatewayChain.Builder<ApiCheckData> builder = AbstractGatewayChain.builder(beanFactory.getBean(IpBlackListCheckChain.class))
-                .addChain(beanFactory.getBean(RateLimitChain.class));
+        AbstractGatewayChain.Builder<ApiCheckData> builder = AbstractGatewayChain.builder();
+
+        builder.addChain(beanFactory.getBean(IpBlackListCheckChain.class));
 
         try {
-            final TimeLimitChain bean = beanFactory.getBean(TimeLimitChain.class);
-            builder.addChain(bean);
+            builder.addChain(beanFactory.getBean(RollWindowRateLimitChain.class));
+            builder.addChain(beanFactory.getBean(TimeLimitChain.class));
         } catch (NoSuchBeanDefinitionException e) {
             log.warn("no instance of TimeLimitChain, don't add it to gateway chain");
         }
@@ -93,13 +103,13 @@ public class DefaultGatewayHandler implements XcGatewayHandler, BeanFactoryAware
         builder.addChain(beanFactory.getBean(UnCheckChain.class));
 
         try {
-            final CheckTokenChain bean = beanFactory.getBean(CheckTokenChain.class);
-            builder.addChain(bean);
+            builder.addChain(beanFactory.getBean(CheckTokenChain.class));
         } catch (NoSuchBeanDefinitionException e) {
             log.warn("no instance of CheckTokenChain, don't add it to gateway chain");
         }
 
         gatewayChain = builder.addChain(beanFactory.getBean(IpWhiteListCheckChain.class))
                 .build();
+        log.info("===> init default xc gateway chain: {}", gatewayChain.chain());
     }
 }

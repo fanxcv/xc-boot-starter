@@ -256,11 +256,12 @@ public interface Redis {
     /**
      * 脚本执行
      * @param script 待执行脚本
+     * @param clazz  返回数据类型
      * @param keys   key列表
      * @param value  值列表
      * @return 执行结果
      */
-    Object exec(String script, List<String> keys, String... value);
+    <T> T exec(String script, Class<T> clazz, List<String> keys, Object... value);
 
     /**
      * 尝试获取分布式锁(单节点redis和r2m适用)

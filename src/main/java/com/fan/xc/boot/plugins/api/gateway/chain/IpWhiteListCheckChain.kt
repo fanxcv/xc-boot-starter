@@ -10,7 +10,6 @@ import com.google.common.collect.Lists
 import com.google.common.collect.Maps
 import org.springframework.web.method.HandlerMethod
 import java.util.*
-import javax.servlet.http.HttpServletRequest
 
 /**
  * 通过Ip校验访问权限,白名单模式
@@ -29,20 +28,19 @@ open class IpWhiteListCheckChain(private val config: XcConfiguration) : Abstract
 
     private val default = "default"
 
-    override fun doExec(handler: HandlerMethod, request: HttpServletRequest, event: Event, v: ApiCheckData?): Pair<Boolean?, ApiCheckData?> {
+    override fun doExec(event: Event, v: ApiCheckData): Boolean? {
         val url = event.getUrl()!!
         // 先从缓存获取相关的校验配置
-        val checkList: List<String> = cache[url] ?: initCheckList(handler, url)
+        val checkList: List<String> = cache[url] ?: initCheckList(v.handler, url)
 
         // 如果无法获取到任何规则匹配,返回校验失败
         if (checkList.isNotEmpty()) {
-            if (v?.ip == null) {
-                v?.ip = computedIp(event)
+            if (v.ip == null) {
+                v.ip = computedIp(event)
             }
-            return Pair(Tools.ipIsInCidr(v?.ip, checkList), null)
+            return Tools.ipIsInCidr(v.ip, checkList)
         }
-
-        return Pair(false, null)
+        return false
     }
 
     /**

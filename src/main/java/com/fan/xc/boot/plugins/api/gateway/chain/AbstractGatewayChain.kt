@@ -4,9 +4,7 @@ import com.fan.xc.boot.starter.event.Event
 import com.google.common.collect.Lists
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.web.method.HandlerMethod
 import java.util.*
-import javax.servlet.http.HttpServletRequest
 
 
 abstract class AbstractGatewayChain<V> {
@@ -65,14 +63,26 @@ abstract class AbstractGatewayChain<V> {
      * 触发方法
      * 如果doExec执行无明确结果,即Null,继续执行后续流程,否则明确返回true,false
      */
-    fun exec(handler: HandlerMethod, request: HttpServletRequest, event: Event, v: V?): Boolean? {
-        val res = doExec(handler, request, event, v)
-        return if (res.first == null) next?.exec(handler, request, event, res.second) ?: res.first else res.first
+    fun exec(event: Event, v: V): Boolean? {
+        val res = doExec(event, v)
+        return res ?: (next?.exec(event, v) ?: res)
     }
 
     /**
      * 逻辑执行
      * @return 校验结果,无明确结果返回Null, T为传入到下个doExec的参数,可为null
      */
-    abstract fun doExec(handler: HandlerMethod, request: HttpServletRequest, event: Event, v: V?): Pair<Boolean?, V?>
+    abstract fun doExec(event: Event, v: V): Boolean?
+
+    fun chain(): String {
+        val sb = StringBuilder()
+        var next: AbstractGatewayChain<V>? = this
+        while (next != null) {
+            sb.append(next.javaClass.simpleName).append("->")
+            next = this.next
+        }
+        val len = sb.length
+        return sb.delete(len - 3, len - 1).toString();
+    }
+
 }

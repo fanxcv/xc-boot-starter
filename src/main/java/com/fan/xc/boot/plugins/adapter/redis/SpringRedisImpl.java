@@ -127,7 +127,8 @@ public class SpringRedisImpl implements Redis {
 
     @Override
     public long hDel(String key, String... field) {
-        return template.opsForHash().delete(key, (Object[]) field);
+        Object[] array = Arrays.stream(field).toArray();
+        return template.opsForHash().delete(key, array);
     }
 
     @Override
@@ -227,8 +228,8 @@ public class SpringRedisImpl implements Redis {
     }
 
     @Override
-    public Object exec(String script, List<String> keys, String... args) {
-        return template.execute(RedisScript.of(script), keys, (Object[]) args);
+    public <T> T exec(String script, Class<T> clazz, List<String> keys, Object... args) {
+        return template.execute(RedisScript.of(script, clazz), keys, args);
     }
 
     @Override
@@ -240,7 +241,7 @@ public class SpringRedisImpl implements Redis {
     @Override
     public boolean releaseDistributedLock(String lockKey, String requestId) {
         String script = "if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del', KEYS[1]) else return 0 end";
-        final Object result = template.execute(RedisScript.of(script), Collections.singletonList(lockKey), requestId);
+        Long result = template.execute(RedisScript.of(script, Long.class), Collections.singletonList(lockKey), requestId);
         return RELEASE_SUCCESS.equals(result);
     }
 }

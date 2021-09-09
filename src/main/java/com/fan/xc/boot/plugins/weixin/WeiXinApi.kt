@@ -46,7 +46,7 @@ class WeiXinApi(private val jsApiTicketManager: JsApiTicketManager,
         val ticket = jsApiTicketManager.token()
         val signStr = "jsapi_ticket=${ticket}&noncestr=${noncestr}&timestamp=${timestamp}&url=${url}"
         val signature = EncryptUtils.sha1(signStr)
-        return signature ?: throw XcRunException("WeiXin jsSdk sign error")
+        return signature
     }
 
     /**
