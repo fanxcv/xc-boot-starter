@@ -3,7 +3,6 @@ package com.fan.xc.boot.starter.handler
 import com.fan.xc.boot.starter.event.Event
 import com.fan.xc.boot.starter.event.EventImpl
 import org.springframework.core.MethodParameter
-import org.springframework.lang.NonNull
 import org.springframework.web.bind.support.WebDataBinderFactory
 import org.springframework.web.context.request.NativeWebRequest
 import org.springframework.web.method.support.HandlerMethodArgumentResolver
@@ -17,11 +16,10 @@ class EventHandlerMethodArgumentResolver : HandlerMethodArgumentResolver {
         return Event::class.java == param.parameterType
     }
 
-    @NonNull
-    override fun resolveArgument(@NonNull parameter: MethodParameter,
-                                 modelAndViewContainer: ModelAndViewContainer,
-                                 @NonNull nativeWebRequest: NativeWebRequest,
-                                 webDataBinderFactory: WebDataBinderFactory): Any {
+    override fun resolveArgument(parameter: MethodParameter,
+                                 mavContainer: ModelAndViewContainer?,
+                                 webRequest: NativeWebRequest,
+                                 binderFactory: WebDataBinderFactory?): Any {
         return EventImpl.getEvent()
     }
 }

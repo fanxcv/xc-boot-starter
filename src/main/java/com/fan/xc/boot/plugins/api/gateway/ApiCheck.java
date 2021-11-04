@@ -98,5 +98,11 @@ public @interface ApiCheck {
          * 缓存Key,支持EL表达式,可以从入参中获取值#{#param}
          */
         String key();
+
+        /**
+         * 当key在match里的话才执行限流
+         * 如果match为空也执行限流
+         */
+        String[] match() default {};
     }
 }

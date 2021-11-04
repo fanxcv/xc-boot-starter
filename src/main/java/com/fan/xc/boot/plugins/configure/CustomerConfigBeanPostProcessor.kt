@@ -8,8 +8,6 @@ import org.springframework.beans.TypeMismatchException
 import org.springframework.beans.factory.BeanFactory
 import org.springframework.beans.factory.BeanFactoryAware
 import org.springframework.beans.factory.annotation.InjectionMetadata
-import org.springframework.lang.NonNull
-import org.springframework.lang.Nullable
 import org.springframework.util.ReflectionUtils
 import org.springframework.util.StringUtils
 import java.lang.reflect.Field
@@ -38,7 +36,7 @@ class CustomerConfigBeanPostProcessor : AbstractFieldValueBeanPostProcessor(), B
 
     private inner class AutowiredFieldElement(field: Field) : InjectionMetadata.InjectedElement(field, null) {
         @Throws(Throwable::class)
-        override fun inject(@NonNull bean: Any, @Nullable beanName: String, @Nullable pvs: PropertyValues) {
+        override fun inject(bean: Any, beanName: String?, pvs: PropertyValues?) {
             val field = member as Field
             val annotation: InjectConfig = field.getAnnotation(InjectConfig::class.java)
             val name: String = if (StringUtils.hasText(annotation.value)) annotation.value else field.name

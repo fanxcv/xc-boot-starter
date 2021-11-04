@@ -2,13 +2,13 @@ package com.fan.xc.boot.plugins.weixin.grpc
 
 import com.google.protobuf.Empty
 import io.grpc.ManagedChannelBuilder
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.Test
 
 class WeiXinRpcClientTest {
     private lateinit var stub: WeiXinServiceGrpc.WeiXinServiceBlockingStub
 
-    @Before
+    @BeforeAll
     fun before() {
         val channel = ManagedChannelBuilder.forAddress("127.0.0.1", 20002)
                 .usePlaintext().build()

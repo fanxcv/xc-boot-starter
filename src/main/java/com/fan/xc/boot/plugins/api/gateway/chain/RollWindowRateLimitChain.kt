@@ -50,18 +50,22 @@ class RollWindowRateLimitChain(private val redis: Redis) : AbstractGatewayChain<
                 .forEach {
                     // 获取key, 解析EL表达式
                     val key = parser.parseExpression(it.key, ParserContext.TEMPLATE_EXPRESSION).getValue(context, String::class.java)
-                    // 计算窗口时间大小
-                    val window = it.window
-                    val totalTime = it.timeUnit.toMillis(it.time)
-                    val windowTime = totalTime / window + if (totalTime % window == 0L) 0 else 1
-                    // 计算当前时间所在的窗口
-                    val current = System.currentTimeMillis()
-                    val currentWindow = current / windowTime + if (current % windowTime == 0L) 0 else 1
-                    // 获取失效时间
-                    val invalidMill = windowTime * (currentWindow - window)
-                    val result = redis.exec(luaScript, Int::class.java, listOf(key), invalidMill, it.value, current)
-                    if (success != result) {
-                        throw XcRunException(-103, "请求频率过高,请稍后再试")
+                    val match = it.match
+                    // 当match为空或者key在match中时, 才执行限流
+                    if (match.isEmpty() || key in match) {
+                        // 计算窗口时间大小
+                        val window = it.window
+                        val totalTime = it.timeUnit.toMillis(it.time)
+                        val windowTime = totalTime / window + if (totalTime % window == 0L) 0 else 1
+                        // 计算当前时间所在的窗口
+                        val current = System.currentTimeMillis()
+                        val currentWindow = current / windowTime + if (current % windowTime == 0L) 0 else 1
+                        // 获取失效时间
+                        val invalidMill = windowTime * (currentWindow - window)
+                        val result = redis.exec(luaScript, Int::class.java, listOf(key), invalidMill, it.value, current)
+                        if (success != result) {
+                            throw XcRunException(-103, "请求频率过高,请稍后再试")
+                        }
                     }
                 }
         return null
