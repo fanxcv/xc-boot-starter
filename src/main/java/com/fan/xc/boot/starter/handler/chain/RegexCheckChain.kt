@@ -27,7 +27,7 @@ class RegexCheckChain : AbstractVerifyChain() {
             cache[reg] = r
             r
         }()
-        if (value == null || !regex.matches(value.toString())) {
+        if (!regex.matches(value?.toString() ?: "")) {
             throw ParamErrorException("Param [$key: '$value'] check fail; Regex: $reg")
         }
         return Pair(true, value)

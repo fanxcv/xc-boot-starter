@@ -79,7 +79,7 @@ abstract class AbstractGatewayChain<V> {
         var next: AbstractGatewayChain<V>? = this
         while (next != null) {
             sb.append(next.javaClass.simpleName).append("->")
-            next = this.next
+            next = next.next
         }
         val len = sb.length
         return sb.delete(len - 3, len - 1).toString();

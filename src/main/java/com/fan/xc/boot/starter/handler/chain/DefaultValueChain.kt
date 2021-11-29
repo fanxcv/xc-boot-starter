@@ -20,6 +20,11 @@ class DefaultValueChain : AbstractVerifyChain() {
         if (require && value == null) {
             return Pair(false, defaultValue ?: throw ParamErrorException("Param [$key] is required"))
         }
-        return Pair(true, value)
+        // 如果值是非必须的,并且value和defaultValue都为null,那就直接注入null了,不在执行后续流程
+        if (!require && value == null && defaultValue == null) {
+            return Pair(false, null)
+        }
+        // 优先返回value, 如果value为null ,则返回defaultValue
+        return Pair(true, value ?: defaultValue)
     }
 }
