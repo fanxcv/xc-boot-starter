@@ -68,10 +68,10 @@ object NetUtils {
     }
 
     /**
-     * 发送post请求,x-www-form-urlencoded传参方式
+     * 发送post请求, 支持自定义header
      */
     @JvmStatic
-    fun <T> post(uri: String, params: Map<String, Any?>, function: (uri: String, connection: HttpURLConnection) -> T): T {
+    fun <T> post(uri: String, params: Map<String, Any?>, headers: Map<String, String>? = null, function: (uri: String, connection: HttpURLConnection) -> T): T {
         var connection: HttpURLConnection? = null
         try {
             // 如有有入参,处理参数
@@ -83,6 +83,9 @@ object NetUtils {
 
             connection = initPostConnection(uri)
             connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=utf-8")
+
+            // 设置header
+            headers?.forEach { (k, v) -> connection.setRequestProperty(k, v) }
 
             if (bytes != null) {
                 connection.setRequestProperty("Content-Length", bytes.size.toString())
@@ -100,6 +103,13 @@ object NetUtils {
             connection?.disconnect()
         }
     }
+
+    /**
+     * 发送post请求,x-www-form-urlencoded传参方式
+     */
+    @JvmStatic
+    fun <T> post(uri: String, params: Map<String, Any?>, function: (uri: String, connection: HttpURLConnection) -> T): T = post(uri, params, null, function)
+
 
     @JvmStatic
     fun post(uri: String, params: Map<String, Any?>): String {

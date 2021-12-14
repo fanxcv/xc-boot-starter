@@ -32,7 +32,7 @@ public class XcCorsConfig {
         log.info("headers allowed {}", config.getAllowedHeaders());
         log.info("methods allowed {}", config.getAllowedMethods());
         CorsConfiguration corsConfiguration = new CorsConfiguration();
-        corsConfiguration.setAllowedOrigins(config.getAllowedOrigins());
+        corsConfiguration.setAllowedOriginPatterns(config.getAllowedOrigins());
         corsConfiguration.setAllowedHeaders(config.getAllowedHeaders());
         corsConfiguration.setAllowedMethods(config.getAllowedMethods());
         //接受cookie
