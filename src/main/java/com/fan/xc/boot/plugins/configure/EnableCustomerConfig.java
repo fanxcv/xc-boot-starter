@@ -11,14 +11,6 @@ import java.lang.annotation.*;
 @Documented
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@Import({
-        Configure.class,
-        CustomerConfigConfiguration.class,
-        CustomerConfigBeanPostProcessor.class
-})
+@Import({ConfigureEventSender.class, ConfigureConfiguration.class})
 public @interface EnableCustomerConfig {
-    /**
-     * 用于参数缓存的配置对象
-     */
-    Class<? extends ConfigureCache> value() default ConfigureCache.class;
 }

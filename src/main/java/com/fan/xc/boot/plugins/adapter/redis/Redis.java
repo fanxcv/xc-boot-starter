@@ -41,6 +41,15 @@ public interface Redis {
     boolean expire(String key, int seconds);
 
     /**
+     * 为key添加过期时间
+     * @param key     key
+     * @param time     时间值 time要大于0 如果time小于等于0 将设置无限期
+     * @param timeUnit 时间单位
+     * @return 设置成功返回 1 。 当 key 不存在或者不能为 key 设置过期时间时返回 0 。
+     */
+    boolean expire(String key, int time, TimeUnit timeUnit);
+
+    /**
      * 以秒为单位，返回给定 key 的剩余生存时间(TTL, time to live)。
      * @param key key
      * @return 当 key 不存在时，返回 -2
@@ -55,7 +64,7 @@ public interface Redis {
      * @param value value
      * @return 设置成功，返回 1  设置失败，返回 0
      */
-    boolean setNx(String key, String value);
+    boolean setNx(String key, Object value);
 
     /**
      * 普通缓存放入并设置时间

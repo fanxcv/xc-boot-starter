@@ -1,10 +1,8 @@
 package com.fan.xc.boot.plugins.api.gateway.chain
 
 import com.fan.xc.boot.starter.event.Event
-import com.google.common.collect.Lists
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.util.*
 
 
 abstract class AbstractGatewayChain<V> {
@@ -13,50 +11,31 @@ abstract class AbstractGatewayChain<V> {
 
     companion object {
         @JvmStatic
-        fun <V> builder(head: AbstractGatewayChain<V>): Builder<V> {
-            return Builder(head)
-        }
-
-        @JvmStatic
         fun <V> builder(): Builder<V> {
             return Builder()
         }
     }
 
     class Builder<V> {
-        private val list: LinkedList<AbstractGatewayChain<V>> = Lists.newLinkedList()
+        private var head: AbstractGatewayChain<V>? = null
+        private var tail: AbstractGatewayChain<V>? = null
 
         constructor()
-        constructor(head: AbstractGatewayChain<V>) {
-            list.addFirst(head)
-        }
-
-        fun head(chain: AbstractGatewayChain<V>): Builder<V> {
-            list.addFirst(chain)
-            return this
-        }
 
         fun addChain(chain: AbstractGatewayChain<V>): Builder<V> {
-            list.addLast(chain)
+            if (head == null) {
+                head = chain
+                tail = chain
+            } else {
+                tail?.next = chain
+                tail = chain
+            }
             return this
         }
 
-        fun build(): AbstractGatewayChain<V> {
-            // head指向第一个元素
-            val head = list.removeFirst()
-            var next: AbstractGatewayChain<V>? = head
-            list.forEach { next = next?.next(it) }
+        fun build(): AbstractGatewayChain<V>? {
             return head
         }
-    }
-
-
-    /**
-     * 设置下一个节点
-     */
-    fun next(nextChain: AbstractGatewayChain<V>?): AbstractGatewayChain<V>? {
-        next = nextChain
-        return next
     }
 
     /**
@@ -65,7 +44,7 @@ abstract class AbstractGatewayChain<V> {
      */
     fun exec(event: Event, v: V): Boolean? {
         val res = doExec(event, v)
-        return res ?: (next?.exec(event, v) ?: res)
+        return res ?: next?.exec(event, v)
     }
 
     /**

@@ -50,13 +50,19 @@ public class SpringRedisImpl implements Redis {
     }
 
     @Override
+    public boolean expire(String key, int time, TimeUnit timeUnit) {
+        final Boolean expire = template.expire(key, time, timeUnit);
+        return expire != null && expire;
+    }
+
+    @Override
     public long ttl(String key) {
         final Long expire = template.getExpire(key, TimeUnit.SECONDS);
         return expire == null ? 0 : expire;
     }
 
     @Override
-    public boolean setNx(String key, String value) {
+    public boolean setNx(String key, Object value) {
         final Boolean res = template.opsForValue().setIfAbsent(key, value);
         return res == null ? false : res;
     }
@@ -87,13 +93,13 @@ public class SpringRedisImpl implements Redis {
 
     @Override
     public long decr(String key) {
-        final Long increment = template.opsForValue().increment(key);
+        final Long increment = template.opsForValue().decrement(key);
         return increment == null ? 0 : increment;
     }
 
     @Override
     public long incr(String key) {
-        final Long decrement = template.opsForValue().decrement(key);
+        final Long decrement = template.opsForValue().increment(key);
         return decrement == null ? 0 : decrement;
     }
 
@@ -235,7 +241,7 @@ public class SpringRedisImpl implements Redis {
     @Override
     public boolean tryGetDistributedLock(String lockKey, String requestId, long millisecond) {
         final Boolean result = template.opsForValue().setIfAbsent(lockKey, requestId, millisecond, TimeUnit.MILLISECONDS);
-        return result == null ? false : result;
+        return result != null && result;
     }
 
     @Override
