@@ -308,11 +308,12 @@
         </plugins>
     </build>
 
+    <!--自定义仓库使用Maven-Go搭建, https://github.com/fanxcv/Maven-Go-->
     <repositories>
         <repository>
             <id>fan</id>
-            <name>fan</name>
-            <url>http://47.101.57.16:8880/maven/private-local</url>
+            <name>Maven-Go</name>
+            <url>http://47.101.57.16:8880/maven/public</url>
         </repository>
     </repositories>
 </project>
